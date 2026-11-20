@@ -6,7 +6,14 @@ from pydantic import BaseModel
 
 VERSION = version("baskets-server")
 
-app = FastAPI(title="Baskets API", version=VERSION)
+app = FastAPI(
+    title="Baskets API",
+    version=VERSION,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+    redirect_slashes=False,
+)
 
 
 class Health(BaseModel):
