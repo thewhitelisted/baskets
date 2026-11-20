@@ -1,0 +1,11 @@
+# Curated corporate actions for ids that no longer trade. Entries here override automatic
+# ended detection and EDGAR rename detection. The file is validated when the API server and
+# the refresh job start; an invalid file stops both. See docs/CONTRACTS.md, Amendment A.
+#
+# [[action]]
+# id = "OLD"
+# successor = "NEW"        # omit for pure cash-out
+# ratio = 0.8              # successor shares per old share (omit or 0 if no successor)
+# cash_per_share = 12.5    # USD; required when successor is omitted
+# effective_date = "2027-03-14"
+# note = "free text"

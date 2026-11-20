@@ -32,3 +32,6 @@ coverage/
 
 # Lean
 .lake/
+
+# Server runtime data (the SQLite cache is covered by *.db above)
+server/data/yfinance-cache/
