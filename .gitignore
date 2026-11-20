@@ -1,0 +1,34 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Environment / secrets
+.env*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Node / web
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Lean
+.lake/
