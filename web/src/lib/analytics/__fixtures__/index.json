@@ -1,0 +1,14 @@
+[
+ "custom_monthly",
+ "custom_long_short_quarterly",
+ "equal_levered_annual",
+ "invvol_median_fallback",
+ "invvol_equal_fallback",
+ "mcap_lookahead",
+ "events_custom_monthly",
+ "events_buy_and_hold",
+ "events_invvol_merge",
+ "events_equal_prestart",
+ "single_asset",
+ "constant_series"
+]
