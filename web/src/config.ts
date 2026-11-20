@@ -15,9 +15,10 @@ export function resolveApiBase(value: string | undefined): string {
       `VITE_API_BASE must use http or https, got ${JSON.stringify(value)}`,
     )
   }
-  if (value.endsWith('/')) {
+  const canonical = (url.origin + url.pathname).replace(/\/$/, '')
+  if (value !== canonical) {
     throw new Error(
-      `VITE_API_BASE must not end with "/", got ${JSON.stringify(value)}`,
+      `VITE_API_BASE must be written as ${JSON.stringify(canonical)} (lower-case host, no trailing "/", query, fragment or whitespace), got ${JSON.stringify(value)}`,
     )
   }
   return value
