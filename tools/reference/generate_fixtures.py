@@ -495,24 +495,26 @@ def none_if_nan(x: float) -> float | None:
 
 def stats(bt: Json) -> Json:
     dates = bt["dates"]
-    nav = pd.Series(bt["nav"], index=dates)
+    nav = pd.Series(np.asarray(bt["nav"], dtype=float), index=pd.Index(dates))
     r = np.array(bt["returns"])
     rf = np.array(bt["rf"])
     rb = np.array(bt["benchmarkReturns"])
     n = len(r)
     e = r - rf
+
     # The share-count backtest reproduces a weight-1 position's return only to
     # rounding, so "constant" allows 1e-14 of noise; the TypeScript weight
     # formulation is exact in those cases.
-    constant = lambda x: np.ptp(x) <= 1e-14  # noqa: E731
+    def constant(x: np.ndarray) -> bool:
+        return bool(np.ptp(x) <= 1e-14)
 
     dd = nav / nav.cummax() - 1
     mdd = float(dd.min())
     if mdd < 0:
-        trough = dd.idxmin()
-        peak = nav.loc[:trough].idxmax()
+        trough = str(dd.idxmin())
+        peak = str(nav.loc[:trough].idxmax())
         after = nav.loc[trough:].iloc[1:]
-        rec = after[after >= nav[peak]]
+        rec = after[after >= nav.loc[peak]]
         dd_info = {"max": mdd, "peakDate": peak, "troughDate": trough, "recoveryDate": rec.index[0] if len(rec) else None}
     else:
         dd_info = {"max": 0.0, "peakDate": None, "troughDate": None, "recoveryDate": None}
@@ -577,9 +579,7 @@ def risk(bt: Json, market: Json, estimator: str, window: int = 252) -> Json | No
     ids = list(w_map)
     if not ids:
         return None
-    rets = pd.DataFrame(
-        {i: returns_of(as_of(cal, market["series"][i]["dates"], market["series"][i]["close"])) for i in ids}
-    )
+    rets = pd.DataFrame({i: returns_of(as_of(cal, market["series"][i]["dates"], market["series"][i]["close"])) for i in ids})
     ok = rets.notna().all(axis=1).to_numpy()
     first = len(cal)
     while first - 1 >= 0 and len(cal) - first < window and ok[first - 1]:
@@ -611,8 +611,7 @@ def risk(bt: Json, market: Json, estimator: str, window: int = 252) -> Json | No
     with np.errstate(divide="ignore", invalid="ignore"):
         corr = cov / np.outer(vols, vols)
     out["correlation"] = [
-        [None if vols[i] == 0 or vols[j] == 0 else (1.0 if i == j else float(corr[i, j])) for j in range(len(ids))]
-        for i in range(len(ids))
+        [None if vols[i] == 0 or vols[j] == 0 else (1.0 if i == j else float(corr[i, j])) for j in range(len(ids))] for i in range(len(ids))
     ]
     if var <= 0:
         out.update({"sigmaP": 0.0, "contributions": None, "diversificationRatio": None, "riskEffectiveN": None})
@@ -778,7 +777,9 @@ def scenarios(cal: list[str]) -> list[tuple[str, Json, bool]]:
         ),
         (
             "events_buy_and_hold",
-            basket("Events none", [("AAA", 0.3), ("ZERO", 0.2), ("DEL", 0.15), ("REN", 0.2), ("ACQ", 0.1), ("DEAL", 0.05)], rebalance="none"),
+            basket(
+                "Events none", [("AAA", 0.3), ("ZERO", 0.2), ("DEL", 0.15), ("REN", 0.2), ("ACQ", 0.1), ("DEAL", 0.05)], rebalance="none"
+            ),
             False,
         ),
         (
