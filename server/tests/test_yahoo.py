@@ -145,6 +145,7 @@ def test_kind_for() -> None:
         ("AOR", "etf", "Allocation", {"stockPosition": 0.49, "bondPosition": 0.49}, "multi_asset"),
         ("X", "mutualfund", None, None, "multi_asset"),
         ("Y", "etf", None, {"stockPosition": 0.5}, "equity"),
+        ("Z", "etf", None, {"bondPosition": 0.5}, "fixed_income"),
     ],
 )
 def test_asset_class_for(

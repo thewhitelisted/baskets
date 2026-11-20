@@ -7,6 +7,7 @@ dividend). `repair` stays off: see the PR for the measurement behind that choice
 
 import logging
 import math
+import threading
 import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from datetime import UTC, date, datetime
@@ -75,10 +76,12 @@ class CountingSession(curl_requests.Session[curl_requests.Response]):
     def __init__(self) -> None:
         super().__init__(impersonate="chrome")
         self.calls = 0
+        self._calls_lock = threading.Lock()
 
     # Signature mirrors curl_cffi Session.request, which is untyped in its arguments.
     def request(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        self.calls += 1
+        with self._calls_lock:  # yf.download issues requests from several threads
+            self.calls += 1
         return super().request(*args, **kwargs)
 
 
