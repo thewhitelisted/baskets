@@ -10,6 +10,7 @@ dependencies = [
     "yfinance",
     "pandas",
     "slowapi",
+    "curl-cffi",
 ]
 
 [dependency-groups]
@@ -40,6 +41,14 @@ strict = true
 python_version = "3.12"
 files = ["app", "tests"]
 
+[[tool.mypy.overrides]]
+# yfinance ships no type information.
+module = ["yfinance", "yfinance.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers -m 'not live'"
+markers = [
+    "live: calls real upstream services (Yahoo, SEC); run with pytest -m live",
+]
